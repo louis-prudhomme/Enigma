@@ -1,7 +1,14 @@
 const etw = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+const rotors = ["VZBRGITYUPSDNHLXAWMJQOFECK", "ESOVPZJAYQUIRHXLNFTGKDCMWB", "BDFHJLCPRTXVZNYEIWGAKMUSQO", "AJDKSIRUXBLHWTMCQGZNPYFVOE", "EKMFLGDQVZNTOWYHXUSPAIBRCJ"];
+const reflectors = ["YRUHQSLDPXNGOKMIEBFZCWVJAT", "EJMZALYXVBWFCRQUONTSPIKHGD"];
+
 Math.modulo = function(a, b)
 {
     return a - b * Math.floor(a / b);
+}
+Math.randInt = function(max) 
+{
+    return Math.floor(Math.random() * Math.floor(max));
 }
 
 class Piece 
@@ -14,6 +21,11 @@ class Piece
     permute(letter)
     {
         return this.wiring[etw.indexOf(letter)];
+    }
+
+    static getReflector()
+    {
+        return new Piece(reflectors[Math.randInt(reflectors.length)]);
     }
 }
 
@@ -38,6 +50,16 @@ class Rotor
     permuteBack(letter)
     {
         return etw[Math.modulo(this.wiring.indexOf(letter) - this.position, etw.length)];
+    }
+
+    reset()
+    {
+        this.position = 0;
+    }
+
+    static getRotor()
+    {
+        return new Rotor(rotors[Math.randInt(rotors.length)]);
     }
 }
 
@@ -65,5 +87,10 @@ class Enigma
             result += this.plugboard.permute(tmp);
         }
         return result;
+    }
+
+    reset()
+    {
+        this.rotor.reset();
     }
 }

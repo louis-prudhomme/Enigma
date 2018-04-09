@@ -6,7 +6,7 @@
     </head>
 
     <body>
-        <h1>Slt</h1>
+        <h1>Enigma Emulator</h1>
         <input id="myInput" type="text">
         <button onclick="doMagik()">Process</button>
         <div id="myDiv"></div>
@@ -14,12 +14,14 @@
     <script src="enigma.js"></script>
     <script>
     "use strict";
+    let enigma;
+    document.addEventListener("DOMContentLoaded", function() 
+    {
+        enigma = new Enigma(Piece.getReflector(), Rotor.getRotor(), Piece.getReflector());
+	});
     function doMagik() 
     {
-        const etw = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        const rotorI = "EKMFLGDQVZNTOWYHXUSPAIBRCJ";
-        const reflectorA = "EJMZALYXVBWFCRQUONTSPIKHGD";
-        const enigma = new Enigma(new Piece(reflectorA), new Rotor(rotorI), new Piece(reflectorA));
+        enigma.reset();
         document.getElementById("myDiv").innerHTML = enigma.process(document.getElementById("myInput").value.toUpperCase());
     }
     </script>
