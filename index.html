@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Enigma</title>
+        <meta charset="UTF-8"> 
+    </head>
+
+    <body>
+        <h1>Slt</h1>
+        <input id="myInput" type="text">
+        <button onclick="doMagik()">Process</button>
+        <div id="myDiv"></div>
+    </body>
+    <script src="enigma.js"></script>
+    <script>
+    "use strict";
+    function doMagik() 
+    {
+        const etw = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        const rotorI = "EKMFLGDQVZNTOWYHXUSPAIBRCJ";
+        const reflectorA = "EJMZALYXVBWFCRQUONTSPIKHGD";
+        const enigma = new Enigma(new Piece(reflectorA), new Rotor(rotorI), new Piece(reflectorA));
+        document.getElementById("myDiv").innerHTML = enigma.process(document.getElementById("myInput").value.toUpperCase());
+    }
+    </script>
+</html> 
