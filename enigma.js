@@ -34,8 +34,9 @@ class Piece
 
 class Rotor 
 {
-    constructor(wiring, ringstellung, grundstellung)
+    constructor(wiring, ringstellung, grundstellung, notch)
     {
+        this.notch = notch;
         this.wiring = wiring;
         this.grundstellung = grundstellung;
         this.position = etw.indexOf(this.grundstellung);
@@ -44,7 +45,14 @@ class Rotor
 
     increment()
     {
-        this.position++;
+        if(this.wiring[this.position] == this.notch)
+        {
+            this.position++;
+            return true;
+        } else {
+            this.position++;
+            return false;
+        }
     }
 
     permute(letter, way)
@@ -91,14 +99,29 @@ class Enigma
         
         for(var i = 0; i < message.length; i++)
         {
-            this.rotors[0].increment();
+            this.increment(0);
             tmp = this.plugboard.permute(message[i]);
             tmp = this.rotorHell(tmp, ways.FORTH);
             tmp = this.reflector.permute(tmp);
             tmp = this.rotorHell(tmp, ways.BACK);
             result += this.plugboard.permute(tmp);
+            if((i % 4) == 3)
+            {
+                result += " ";
+            }
         }
         return result;
+    }
+
+    increment(index)
+    {
+        if(index < this.rotors.length)
+        {
+            if(this.rotors[index].increment())
+            {
+                this.increment(index + 1);
+            }
+        }
     }
 
     rotorHell(letter, way)

@@ -22,7 +22,7 @@
     function doMagik() 
     {
         enigma.reset();
-        document.getElementById("myDiv").innerHTML = enigma.process(document.getElementById("myInput").value.toUpperCase());
+        document.getElementById("myDiv").innerHTML = enigma.process(document.getElementById("myInput").value.toUpperCase().split(" ").join(""));
     }
     </script>
 </html> 
