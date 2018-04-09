@@ -2,6 +2,7 @@
 const etw = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 const cogs = ["VZBRGITYUPSDNHLXAWMJQOFECK", "ESOVPZJAYQUIRHXLNFTGKDCMWB", "BDFHJLCPRTXVZNYEIWGAKMUSQO", "AJDKSIRUXBLHWTMCQGZNPYFVOE", "EKMFLGDQVZNTOWYHXUSPAIBRCJ"];
 const reflectors = ["YRUHQSLDPXNGOKMIEBFZCWVJAT", "EJMZALYXVBWFCRQUONTSPIKHGD"];
+const ways = Object.freeze({"BACK":0, "FORTH":1});
 
 Math.modulo = function(a, b)
 {
@@ -11,6 +12,7 @@ Math.randInt = function(max)
 {
     return Math.floor(Math.random() * Math.floor(max));
 }
+
 
 class Piece 
 {
@@ -36,7 +38,6 @@ class Rotor
     {
         this.wiring = wiring;
         this.grundstellung = grundstellung;
-        this.ringstellung = ringstellung;
         this.position = etw.indexOf(this.grundstellung);
         this.offset = etw.length - this.wiring.indexOf(ringstellung);
     }
@@ -46,14 +47,14 @@ class Rotor
         this.position++;
     }
 
-    permuteForth(letter)
+    permute(letter, way)
     {
-        return this.wiring[Math.modulo(etw.indexOf(letter) + this.position - this.offset, etw.length)];
-    }
-
-    permuteBack(letter)
-    {
-        return etw[Math.modulo(this.wiring.indexOf(letter) - this.position + this.offset, etw.length)];
+        if(way == ways.FORTH)
+        {
+            return this.wiring[Math.modulo(etw.indexOf(letter) + this.position - this.offset, etw.length)];
+        } else {
+            return etw[Math.modulo(this.wiring.indexOf(letter) - this.position + this.offset, etw.length)];
+        }
     }
 
     reset()
@@ -65,14 +66,21 @@ class Rotor
     {
         return new Rotor(cogs[Math.randInt(cogs.length)], etw[Math.randInt(etw.length)], etw[Math.randInt(etw.length)]);
     }
+
+    static getRotors()
+    {
+        let rotors = [];
+        cogs.forEach(element => { rotors.push(new Rotor(element, etw[Math.randInt(etw.length)], etw[Math.randInt(etw.length)])); });
+        return rotors;
+    }
 }
 
 class Enigma
 {
-    constructor(plugboard, rotor, reflector)
+    constructor(plugboard, rotors, reflector)
     {
         this.plugboard = plugboard;
-        this.rotor = rotor;
+        this.rotors = rotors;
         this.reflector = reflector;
     }
 
@@ -82,19 +90,34 @@ class Enigma
         let tmp; 
         
         for(var i = 0; i < message.length; i++)
-        {  
-            this.rotor.increment();
+        {
+            this.rotors[0].increment();
             tmp = this.plugboard.permute(message[i]);
-            tmp = this.rotor.permuteForth(tmp);
+            tmp = this.rotorHell(tmp, ways.FORTH);
             tmp = this.reflector.permute(tmp);
-            tmp = this.rotor.permuteBack(tmp);
+            tmp = this.rotorHell(tmp, ways.BACK);
             result += this.plugboard.permute(tmp);
+        }
+        return result;
+    }
+
+    rotorHell(letter, way)
+    {
+        let result = letter;
+        for(let i = 0; i < this.rotors.length; i++)
+        {
+            if(way == ways.FORTH)
+            {
+                result = this.rotors[i].permute(result, way);
+            } else {
+                result = this.rotors[this.rotors.length - 1 - i].permute(result, way);
+            }
         }
         return result;
     }
 
     reset()
     {
-        this.rotor.reset();
+        this.rotors.forEach(element => { element.reset(); });
     }
 }
