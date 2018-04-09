@@ -29,12 +29,17 @@ class Rotor
 
     permuteForth(letter)
     {
-        return this.wiring[(this.etw.indexOf(letter))];
+        return this.wiring[(this.etw.indexOf(letter) + this.position) % this.etw.length];
     }
 
     permuteBack(letter)
     {
-        return this.etw[(this.wiring.indexOf(letter))];
+        let index = this.wiring.indexOf(letter) - this.position;
+        while(index < 0)
+        {
+            index = index + this.etw.length;
+        }
+        return this.etw[index];
     }
 }
 
@@ -54,16 +59,11 @@ class Enigma
         
         for(var i = 0; i < message.length; i++)
         {  
-
             this.rotor.increment();
             tmp = this.plugboard.permute(message[i]);
-            console.log(tmp);
             tmp = this.rotor.permuteForth(tmp);
-            console.log(tmp);
             tmp = this.reflector.permute(tmp);
-            console.log(tmp);
             tmp = this.rotor.permuteBack(tmp);
-            console.log(tmp);
             result += this.plugboard.permute(tmp);
         }
         return result;
