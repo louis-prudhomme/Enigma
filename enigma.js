@@ -1,5 +1,6 @@
+"use strict";
 const etw = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-const rotors = ["VZBRGITYUPSDNHLXAWMJQOFECK", "ESOVPZJAYQUIRHXLNFTGKDCMWB", "BDFHJLCPRTXVZNYEIWGAKMUSQO", "AJDKSIRUXBLHWTMCQGZNPYFVOE", "EKMFLGDQVZNTOWYHXUSPAIBRCJ"];
+const cogs = ["VZBRGITYUPSDNHLXAWMJQOFECK", "ESOVPZJAYQUIRHXLNFTGKDCMWB", "BDFHJLCPRTXVZNYEIWGAKMUSQO", "AJDKSIRUXBLHWTMCQGZNPYFVOE", "EKMFLGDQVZNTOWYHXUSPAIBRCJ"];
 const reflectors = ["YRUHQSLDPXNGOKMIEBFZCWVJAT", "EJMZALYXVBWFCRQUONTSPIKHGD"];
 
 Math.modulo = function(a, b)
@@ -31,10 +32,13 @@ class Piece
 
 class Rotor 
 {
-    constructor(wiring)
+    constructor(wiring, ringstellung, grundstellung)
     {
         this.wiring = wiring;
-        this.position = 0;
+        this.grundstellung = grundstellung;
+        this.ringstellung = ringstellung;
+        this.position = etw.indexOf(this.grundstellung);
+        this.offset = etw.length - this.wiring.indexOf(ringstellung);
     }
 
     increment()
@@ -44,22 +48,22 @@ class Rotor
 
     permuteForth(letter)
     {
-        return this.wiring[Math.modulo(etw.indexOf(letter) + this.position, etw.length)];
+        return this.wiring[Math.modulo(etw.indexOf(letter) + this.position - this.offset, etw.length)];
     }
 
     permuteBack(letter)
     {
-        return etw[Math.modulo(this.wiring.indexOf(letter) - this.position, etw.length)];
+        return etw[Math.modulo(this.wiring.indexOf(letter) - this.position + this.offset, etw.length)];
     }
 
     reset()
     {
-        this.position = 0;
+        this.position = etw.indexOf(this.grundstellung);
     }
 
     static getRotor()
     {
-        return new Rotor(rotors[Math.randInt(rotors.length)]);
+        return new Rotor(cogs[Math.randInt(cogs.length)], etw[Math.randInt(etw.length)], etw[Math.randInt(etw.length)]);
     }
 }
 
