@@ -1,14 +1,19 @@
+const etw = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+Math.modulo = function(a, b)
+{
+    return a - b * Math.floor(a / b);
+}
+
 class Piece 
 {
     constructor(wiring)
     {
         this.wiring = wiring;
-        this.etw = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     }
 
     permute(letter)
     {
-        return this.wiring[this.etw.indexOf(letter)];
+        return this.wiring[etw.indexOf(letter)];
     }
 }
 
@@ -17,9 +22,7 @@ class Rotor
     constructor(wiring)
     {
         this.wiring = wiring;
-
         this.position = 0;
-        this.etw = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     }
 
     increment()
@@ -29,17 +32,12 @@ class Rotor
 
     permuteForth(letter)
     {
-        return this.wiring[(this.etw.indexOf(letter) + this.position) % this.etw.length];
+        return this.wiring[Math.modulo(etw.indexOf(letter) + this.position, etw.length)];
     }
 
     permuteBack(letter)
     {
-        let index = this.wiring.indexOf(letter) - this.position;
-        while(index < 0)
-        {
-            index = index + this.etw.length;
-        }
-        return this.etw[index];
+        return etw[Math.modulo(this.wiring.indexOf(letter) - this.position, etw.length)];
     }
 }
 
